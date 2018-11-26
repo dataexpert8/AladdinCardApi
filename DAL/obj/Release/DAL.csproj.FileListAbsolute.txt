@@ -1,0 +1,74 @@
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\DAL.dll.config
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\DAL.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\DAL.pdb
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\EntityFramework.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\EntityFramework.SqlServer.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\Newtonsoft.Json.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\PushSharp.Amazon.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\PushSharp.Apple.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\PushSharp.Blackberry.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\PushSharp.Core.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\PushSharp.Firefox.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\PushSharp.Google.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\PushSharp.Windows.dll
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\EntityFramework.xml
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\EntityFramework.SqlServer.xml
+F:\VS\GitRepository\BasketApp\DAL\bin\Release\Newtonsoft.Json.xml
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.csprojResolveAssemblyReference.cache
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.Migrations.asd.resources
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.Migrations.asdasd.resources
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.Migrations.asd1.resources
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.Migrations.asd2.resources
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.Migrations.asd3.resources
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.Migrations.asd4.resources
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.Migrations.asd5.resources
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.csproj.GenerateResource.Cache
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.dll
+F:\VS\GitRepository\BasketApp\DAL\obj\Release\DAL.pdb
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\DAL.dll.config
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\DAL.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\DAL.pdb
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\EntityFramework.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\EntityFramework.SqlServer.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\Newtonsoft.Json.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\PushSharp.Amazon.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\PushSharp.Apple.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\PushSharp.Blackberry.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\PushSharp.Core.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\PushSharp.Firefox.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\PushSharp.Google.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\PushSharp.Windows.dll
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\EntityFramework.xml
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\EntityFramework.SqlServer.xml
+F:\VS\GitRepository\SkriblApi\DAL\bin\Release\Newtonsoft.Json.xml
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.csprojResolveAssemblyReference.cache
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.Migrations.asd.resources
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.Migrations.asdasd.resources
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.Migrations.asd1.resources
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.Migrations.asd2.resources
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.Migrations.asd3.resources
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.Migrations.asd4.resources
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.Migrations.asd5.resources
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.csproj.GenerateResource.Cache
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.dll
+F:\VS\GitRepository\SkriblApi\DAL\obj\Release\DAL.pdb
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\DAL.dll.config
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\DAL.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\DAL.pdb
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\EntityFramework.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\EntityFramework.SqlServer.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\Newtonsoft.Json.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\PushSharp.Amazon.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\PushSharp.Apple.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\PushSharp.Blackberry.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\PushSharp.Core.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\PushSharp.Firefox.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\PushSharp.Google.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\PushSharp.Windows.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\EntityFramework.xml
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\EntityFramework.SqlServer.xml
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\bin\Release\Newtonsoft.Json.xml
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\obj\Release\DAL.csprojResolveAssemblyReference.cache
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\obj\Release\DAL.csproj.CoreCompileInputs.cache
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\obj\Release\DAL.dll
+C:\Driver B\Projects\Skribl\SkriblApi\DAL\obj\Release\DAL.pdb

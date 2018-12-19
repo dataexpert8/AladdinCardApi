@@ -62,10 +62,12 @@ namespace DAL
 
         //public virtual Box Box { get; set; }
 
-        //[ForeignKey("Category")]
-        public int Category_Id { get; set; }
+        [ForeignKey("Category")]
+        public int? Category_Id { get; set; }
 
-        //public virtual Category Category { get; set; }
+        public string PIN { get; set; }
+
+        public virtual Category Category { get; set; }
 
 
         [JsonIgnore]

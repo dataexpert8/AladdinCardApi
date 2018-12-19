@@ -11,7 +11,7 @@ namespace DAL
     {
         public Box()
         {
-            Category = new Category();
+
         }
 
         public int Id { get; set; }

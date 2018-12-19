@@ -121,6 +121,8 @@ namespace DAL
 
         public List<VerificaionCodes> VerifyCodes { get; set; }
 
+        public List<Savings> Savings { get; set; }
+
         public bool IsNotificationsOn { get; set; }
 
         [NotMapped]

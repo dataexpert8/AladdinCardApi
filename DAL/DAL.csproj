@@ -88,6 +88,9 @@
     <Compile Include="Application.cs" />
     <Compile Include="AppRatings.cs" />
     <Compile Include="Box.cs" />
+    <Compile Include="CardRequest.cs" />
+    <Compile Include="Cities.cs" />
+    <Compile Include="Savings.cs" />
     <Compile Include="SkriblContext.cs" />
     <Compile Include="Category.cs" />
     <Compile Include="ContactUs.cs" />

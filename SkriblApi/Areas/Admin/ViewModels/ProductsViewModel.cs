@@ -10,7 +10,7 @@ namespace BasketApi.Areas.Admin.ViewModels
     public class ProductsViewModel
     {
         public int Count { get; set; }
-        public IEnumerable<Product> Products { get; set; }
+        public List<Product> Products { get; set; }
     }
 
     public class SearchProductListViewModel

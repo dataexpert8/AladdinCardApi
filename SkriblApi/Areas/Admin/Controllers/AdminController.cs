@@ -412,6 +412,7 @@ namespace WebApplication1.Areas.Admin.Controllers
                             model.ImageUrl = ConfigurationManager.AppSettings["CategoryImageFolderPath"] + model.Id + "_" + guid + fileExtension;
                         }
 
+                        model.Sorting = existingCategory.Sorting;
                         ctx.Entry(existingCategory).CurrentValues.SetValues(model);
                         ctx.SaveChanges();
                     }
@@ -434,7 +435,7 @@ namespace WebApplication1.Areas.Admin.Controllers
             }
         }
 
-        [BasketApi.Authorize("SubAdmin", "SuperAdmin", "ApplicationAdmin")]
+        //[BasketApi.Authorize("SubAdmin", "SuperAdmin", "ApplicationAdmin")]
         /// <summary>
         /// Add product with image. This is multipart request
         /// </summary>
@@ -470,9 +471,13 @@ namespace WebApplication1.Areas.Admin.Controllers
 
                 model.Name = httpRequest.Params["Name"];
                 model.Price = Convert.ToDouble(httpRequest.Params["Price"]);
-                model.Store_Id = Convert.ToInt32(httpRequest.Params["Store_Id"]);
+                model.Category_Id = Convert.ToInt32(httpRequest.Params["Category_Id"]);
                 model.Description = httpRequest.Params["Description"];
                 model.Store_Id = Convert.ToInt32(httpRequest.Params["Store_Id"]);
+                model.DiscountPercentage = Convert.ToDouble(httpRequest.Params["DiscountPercentage"]);
+                model.DiscountPrice = Convert.ToDouble(httpRequest.Params["DiscountPrice"]);
+                model.CreatedDate = DateTime.UtcNow;
+                
 
                 Validate(model);
 
@@ -584,6 +589,7 @@ namespace WebApplication1.Areas.Admin.Controllers
 
                     if (model.Id == 0)
                     {
+                        model.CreatedDate = DateTime.UtcNow;
                         ctx.Products.Add(model);
                         ctx.SaveChanges();
                         var guid = Guid.NewGuid();
@@ -611,7 +617,7 @@ namespace WebApplication1.Areas.Admin.Controllers
                             postedFile.SaveAs(newFullPath);
                             model.ImageUrl = ConfigurationManager.AppSettings["ProductImageFolderPath"] + model.Id + "_" + guid + fileExtension;
                         }
-
+                     
                         ctx.Entry(existingProduct).CurrentValues.SetValues(model);
                         ctx.SaveChanges();
                     }
@@ -1081,6 +1087,15 @@ where Categories.IsDeleted = 0";
 
                     var offers = ctx.Database.SqlQuery<SearchOfferViewModel>(query).ToList();
 
+                    if(offers != null)
+                    {
+                        foreach (var offer in offers)
+                        {
+                            offer.Store = ctx.Stores.FirstOrDefault(x => x.Id == offer.Store_Id);
+                        }
+                    }
+
+                    
                     return Ok(new CustomResponse<SearchOfferListViewModel> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = new SearchOfferListViewModel { Offers = offers } });
                 }
             }
@@ -1995,13 +2010,14 @@ and
                             return Ok(new CustomResponse<Error> { Message = "Forbidden", StatusCode = (int)HttpStatusCode.Forbidden, Result = new Error { ErrorMessage = "Category with this name already exists." } });
                         else
                         {
-                            ctx.Boxes.Add(new Box {
-                               Category_Id=model.Category_Id,
-                               Status=1,
-                               Name=model.Name,
-                               IsDeleted=false,
-                               CreatedDate=DateTime.Now,
-                               Description=model.Description
+                            ctx.Boxes.Add(new Box
+                            {
+                                Category_Id = model.Category_Id,
+                                Status = 1,
+                                Name = model.Name,
+                                IsDeleted = false,
+                                CreatedDate = DateTime.Now,
+                                Description = model.Description,
                             });
                             ctx.SaveChanges();
 
@@ -2028,7 +2044,7 @@ and
                     {
                         Message = Global.ResponseMessages.Success,
                         StatusCode = (int)HttpStatusCode.OK,
-                        Result = new SearchBoxesViewModel { Boxes = ctx.Boxes.Where(x => x.IsDeleted == false).ToList() }
+                        Result = new SearchBoxesViewModel { Boxes = ctx.Boxes.Include(x => x.Category).Where(x => x.IsDeleted == false).ToList() }
                     });
                 }
             }
@@ -2256,5 +2272,29 @@ and
                 return StatusCode(Utility.LogError(ex));
             }
         }
+
+
+        [HttpGet]
+        [Route("GetStoreByCategoryIdForAdmin")]
+        public async Task<IHttpActionResult> GetStoreByCategoryIdForAdmin(int Category_Id)
+        {
+            try
+            {
+                using (SkriblContext ctx = new SkriblContext())
+                {
+
+                    var Stores = ctx.Stores.Where(x => x.Category_Id == Category_Id && !x.IsDeleted).ToList();
+
+                    return Ok(new CustomResponse<List<Store>> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = Stores });
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(Utility.LogError(ex));
+            }
+        }
+
     }
 }

@@ -30,6 +30,8 @@ namespace DAL
         
         public bool IsDeleted { get; set; }
 
+        public int? Sorting { get; set; }
+
         [NotMapped]
         public int ProductCount { get; set; }
 

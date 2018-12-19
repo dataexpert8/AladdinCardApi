@@ -6,7 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>C:\Driver B\Projects\Deployment\AladdinApi</_PublishTargetUrl>
+    <_PublishTargetUrl>C:\Driver B\Projects\live\Api</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="appsettings.json">
@@ -88,13 +88,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2017 13:13:03</publishTime>
     </File>
     <File Include="bin/DAL.dll">
-      <publishTime>11/23/2018 20:21:41</publishTime>
+      <publishTime>12/14/2018 02:51:14</publishTime>
     </File>
     <File Include="bin/DAL.dll.config">
       <publishTime>12/12/2017 15:55:13</publishTime>
     </File>
     <File Include="bin/DAL.pdb">
-      <publishTime>11/23/2018 20:21:41</publishTime>
+      <publishTime>12/14/2018 02:51:14</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>11/27/2017 13:13:03</publishTime>
@@ -295,10 +295,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2017 13:13:08</publishTime>
     </File>
     <File Include="bin/WebApplication1.dll">
-      <publishTime>11/25/2018 15:51:28</publishTime>
+      <publishTime>12/17/2018 02:32:10</publishTime>
     </File>
     <File Include="bin/WebApplication1.pdb">
-      <publishTime>11/25/2018 15:51:28</publishTime>
+      <publishTime>12/17/2018 02:32:10</publishTime>
     </File>
     <File Include="bin/WebGrease.dll">
       <publishTime>11/27/2017 13:13:08</publishTime>
@@ -541,7 +541,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2017 13:13:01</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>11/25/2018 15:51:33</publishTime>
+      <publishTime>12/17/2018 02:21:24</publishTime>
     </File>
   </ItemGroup>
 </Project>

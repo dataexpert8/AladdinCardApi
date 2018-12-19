@@ -29,7 +29,7 @@ namespace WebApplication1.Areas.Admin.Controllers
                         StatusCode = (int)HttpStatusCode.OK,
                         Result = new CategoryViewModel
                         {
-                            Categories = ctx.Categories.Where(x => !x.IsDeleted).OrderBy(x => x.Id).Skip(Page.Value * Items.Value).Take(Items.Value).ToList(),
+                            Categories = ctx.Categories.Where(x => !x.IsDeleted).OrderBy(x => x.Sorting).Skip(Page.Value * Items.Value).Take(Items.Value).ToList(),
                             TotalRecords = ctx.Categories.Count(x => !x.IsDeleted)
                         }
                     };

@@ -60,7 +60,7 @@ namespace DAL
         public string Size { get; set; }
 
         [ForeignKey("Category")]
-        public int Category_Id { get; set; }
+        public int? Category_Id { get; set; }
 
         [NotMapped]
         public bool IsFavourite { get; set; }
@@ -103,5 +103,7 @@ namespace DAL
         public int OrderedCount { get; set; }
 
         public double AverageRating { get; set; }
+
+        public DateTime CreatedDate { get; set; }
     }
 }

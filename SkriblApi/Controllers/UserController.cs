@@ -287,7 +287,7 @@ namespace BasketApi.Controllers
                 model.Email = httpRequest.Params["Email"];
                 model.ConfirmPassword = httpRequest.Params["ConfirmPassword"];
                 model.Password = httpRequest.Params["Password"];
-                model.Nationality= httpRequest.Params["Nationality"];
+                model.Nationality = httpRequest.Params["Nationality"];
 
 
                 Validate(model);
@@ -378,13 +378,13 @@ namespace BasketApi.Controllers
                     {
                         Email = model.Email,
                         Password = model.Password,
-                        FirstName= model.FirstName,
-                        LastName= model.LastName,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
                         Status = (int)Global.StatusCode.NotVerified,
                         SignInType = 0,
                         Nationality = model.Nationality,
                         IsNotificationsOn = true,
-                        IsDeleted=false
+                        IsDeleted = false
                     };
 
                     ctx.Users.Add(userModel);
@@ -522,18 +522,13 @@ namespace BasketApi.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [Authorize]
+       
         [Route("ChangePassword")]
         public async Task<IHttpActionResult> ChangePassword(SetPasswordBindingModel model)
         {
             try
             {
-                var userEmail = User.Identity.Name;
-                if (string.IsNullOrEmpty(userEmail))
-                {
-                    throw new Exception("User Email is empty in user.identity.name.");
-                }
-                else if (!ModelState.IsValid)
+               if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
@@ -542,7 +537,7 @@ namespace BasketApi.Controllers
                 {
                     if (model.SignInType == (int)RoleTypes.User)
                     {
-                        var user = ctx.Users.FirstOrDefault(x => x.Email == userEmail && x.Password == model.OldPassword);
+                        var user = ctx.Users.FirstOrDefault(x => x.Email == model.Email && x.Password == model.OldPassword);
                         if (user != null)
                         {
                             user.Password = model.NewPassword;
@@ -552,18 +547,6 @@ namespace BasketApi.Controllers
                         else
                             return Ok(new CustomResponse<Error> { Message = "Forbidden", StatusCode = (int)HttpStatusCode.Forbidden, Result = new Error { ErrorMessage = "Invalid old password." } });
 
-                    }
-                    else if (model.SignInType == (int)RoleTypes.Deliverer)
-                    {
-                        var deliveryMan = ctx.DeliveryMen.FirstOrDefault(x => x.Email == userEmail && x.Password == model.OldPassword);
-                        if (deliveryMan != null)
-                        {
-                            deliveryMan.Password = model.NewPassword;
-                            ctx.SaveChanges();
-                            return Ok(new CustomResponse<string> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK });
-                        }
-                        else
-                            return Ok(new CustomResponse<Error> { Message = "Forbidden", StatusCode = (int)HttpStatusCode.Forbidden, Result = new Error { ErrorMessage = "Invalid old password" } });
                     }
                     else
                         return Ok(new CustomResponse<Error> { Message = Global.ResponseMessages.BadRequest, StatusCode = (int)HttpStatusCode.BadRequest, Result = new Error { ErrorMessage = Global.ResponseMessages.GenerateInvalid("SignInType") } });
@@ -880,7 +863,7 @@ namespace BasketApi.Controllers
                             {
                                 code.IsDeleted = true;
                                 ctx.SaveChanges();
-                                return Ok(new CustomResponse<User> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK ,Result=user});
+                                return Ok(new CustomResponse<User> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = user });
 
                             }
                         }
@@ -936,7 +919,7 @@ namespace BasketApi.Controllers
                                 IsActive = true
                             };
 
-                            //PushNotificationsUtil.ConfigurePushNotifications(userDeviceModel);
+                            PushNotificationsUtil.ConfigurePushNotifications(userDeviceModel);
 
                             user.UserDevices.Add(userDeviceModel);
                             ctx.SaveChanges();
@@ -1014,6 +997,119 @@ namespace BasketApi.Controllers
                     else
                         return Ok(new CustomResponse<Error> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = new Error { ErrorMessage = "Invalid UserId or DeviceId." } });
                 }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(Utility.LogError(ex));
+            }
+        }
+
+
+        [HttpPost]
+        [Route("Savings")]
+        public IHttpActionResult Savings(SavingBindingModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                using (SkriblContext ctx = new SkriblContext())
+                {
+                    ctx.Savings.Add(new DAL.Savings
+                    {
+                        CreatedDate = DateTime.Now,
+                        SavingsAmount = model.Savings,
+                        User_Id = model.User_Id
+                    });
+                    ctx.SaveChanges();
+                    return Ok(new CustomResponse<string> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = "Record saved successfully." });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(Utility.LogError(ex));
+            }
+        }
+
+
+        [HttpGet]
+        [Route("GetUserSavings")]
+        public IHttpActionResult GetUserSavings(int User_Id, int? Page = 0, int? Items = 10)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                using (SkriblContext ctx = new SkriblContext())
+                {
+                    double Total = 0;
+                    var getAllSavings = ctx.Savings.Where(x => !x.IsDeleted).ToList();
+                    if (getAllSavings != null)
+                    {
+                        foreach (var item in getAllSavings)
+                        {
+                            Total = Total + Convert.ToDouble(item.SavingsAmount);
+                        }
+                    }
+                    return Ok(new CustomResponse<double> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = Total });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(Utility.LogError(ex));
+            }
+        }
+
+        [HttpGet]
+        [Route("ClearAllSavings")]
+        public IHttpActionResult ClearAllSavings(int User_Id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                using (SkriblContext ctx = new SkriblContext())
+                {
+
+                    var Savings = ctx.Savings.Where(x => x.User_Id == User_Id && !x.IsDeleted).ToList();
+                    if (Savings != null)
+                    {
+                        foreach (var item in Savings)
+                        {
+                            item.IsDeleted = true;
+                        }
+                        ctx.SaveChanges();
+                    }
+
+                    return Ok(new CustomResponse<string> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = "Record cleared successfully." });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(Utility.LogError(ex));
+            }
+        }
+
+        [HttpGet]
+        [Route("GetCardDetails")]
+        public IHttpActionResult GetCardDetails(int User_Id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                using (SkriblContext ctx = new SkriblContext())
+                {
+                    return Ok(new CustomResponse<CardRequest> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = ctx.CardRequest.FirstOrDefault(x => x.User_Id == User_Id && !x.IsDeleted)});
+                }
+
             }
             catch (Exception ex)
             {

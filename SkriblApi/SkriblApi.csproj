@@ -298,6 +298,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\CategoryController.cs" />
+    <Compile Include="Areas\Admin\Controllers\CommonController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Areas\Admin\Controllers\StoresController.cs" />
     <Compile Include="Areas\Admin\Models\BindingModel.cs" />
@@ -339,6 +340,7 @@
     <Compile Include="BindingModels\AddBoxBindingModel.cs" />
     <Compile Include="BindingModels\AddHowItWorksBindingModel.cs" />
     <Compile Include="BindingModels\ChangeOrderStatusBindingModel.cs" />
+    <Compile Include="BindingModels\FavouriteBindingModel.cs" />
     <Compile Include="BindingModels\NotificationBindingModel.cs" />
     <Compile Include="BindingModels\PackageBindingModel.cs" />
     <Compile Include="BindingModels\ProductBindingModel.cs" />

@@ -14,6 +14,8 @@ namespace DAL
 
         public int User_ID { get; set; }
 
+        public bool IsFavourite { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public virtual Product Product { get; set; }

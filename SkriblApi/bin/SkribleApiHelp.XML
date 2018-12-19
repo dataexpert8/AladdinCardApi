@@ -120,6 +120,12 @@
             </summary>
             <param name="deviceModel">Device to be configured.</param>
         </member>
+        <member name="M:WebApplication1.Areas.Admin.Controllers.AdminController.AddProductWithImage">
+            <summary>
+            Add product with image. This is multipart request
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:WebApplication1.Areas.HelpPage.ApiDescriptionExtensions.GetFriendlyId(System.Web.Http.Description.ApiDescription)">
             <summary>
             Generates an URI-friendly ID for the <see cref="T:System.Web.Http.Description.ApiDescription"/>. E.g. "Get-Values-id_name" instead of "GetValues/{id}?name={name}"

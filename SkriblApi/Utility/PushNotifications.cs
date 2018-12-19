@@ -1,6 +1,7 @@
 ﻿using BasketApi;
 using BasketApi.Models;
 using DAL;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PushSharp.Apple;
 using PushSharp.Core;
@@ -8,7 +9,9 @@ using PushSharp.Google;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using static BasketApi.Global;
@@ -203,17 +206,17 @@ namespace BasketApi
         }
 
 
-        public class IosPush
-        {
-            public IosPush()
-            {
-                aps = new aps();
-                notification = new NotificationModel();
-            }
+        //public class IosPush
+        //{
+        //    public IosPush()
+        //    {
+        //        aps = new aps();
+        //        notification = new NotificationModel();
+        //    }
 
-            public aps aps { get; set; }
-            public NotificationModel notification { get; set; }
-        }
+        //    public aps aps { get; set; }
+        //    public NotificationModel notification { get; set; }
+        //}
 
         public class aps
         {
@@ -231,76 +234,197 @@ namespace BasketApi
             public string title { get; set; }
             public string body { get; set; }
         }
-        public void SendIOSPushNotification(List<UserDevice> devices, AdminNotifications AdminNotification = null, Notification OtherNotification = null, int Type = 0)
+
+
+        // from here
+        public class NotificationMessage
         {
+            public string[] registration_ids { get; set; }
+            public SendNotification notification { get; set; }
+            public object data { get; set; }
+        }
+        public class SendNotification
+        {
+            public string title { get; set; }
+            public string text { get; set; }
+        }
+        public class DynamicValuesModel
+        {
+            public int entityid { get; set; }
+            public int entitytype { get; set; }
+            public int notificationid { get; set; }
+            public bool isread { get; set; }
+        }
+
+
+        public void SendIOSPushNotification(List<UserDevice> devices, AdminNotifications AdminNotification = null, Notification OtherNotification = null, int EntityType = 0, int EntityId = 0)
+        {
+            string serverKey = GCMWebAPIKey;
+            var result = "-1";
+            var notificationid = 0;
+
             try
             {
-                // Configuration (NOTE: .pfx can also be used here)
-                if (devices.Count() == 0) //it means there is no device no need to run the below code
-                {
-                    return;
-                }
+                var webAddr = "https://fcm.googleapis.com/fcm/send";
 
-                if (ApnsConfig != null)
+                foreach (var device in devices.Where(x => x.IsActive))
                 {
-                    IosPush pushModel = new IosPush();
-
-                    foreach (var device in devices.Where(x => x.IsActive))
+                    var httpWebRequest = (HttpWebRequest)WebRequest.Create(webAddr);
+                    httpWebRequest.ContentType = "application/json";
+                    httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, "key=" + serverKey);
+                    httpWebRequest.Method = "POST";
+                    NotificationMessage pushModel = new NotificationMessage();
+                    if (AdminNotification != null)
                     {
-                        if (AdminNotification != null)
+
+                        pushModel.aps.alert.title = AdminNotification.Title;
+                        pushModel.aps.alert.body = AdminNotification.Description;
+                        if (device.User != null)
+                            pushModel.notification.NotificationId = device.User.SendingUserNotifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id).Id;
+                        else
+                            //pushModel.notification.NotificationId = device.DeliveryMan.Notifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id).Id;
+                            pushModel.notification.EntityType = (int)PushNotificationType.Announcement;
+                        //pushModel.notification.EntityId = OtherNotification.Entity_ID.Value;
+                        pushModel.aps.contentavailable = 1;
+                    }
+                    else
+                    {
+                        pushModel.aps.alert.title = OtherNotification.Title;
+                        pushModel.aps.alert.body = OtherNotification.Description;
+                        pushModel.notification.NotificationId = OtherNotification.Id;
+                        //pushModel.notification.DeliveryMan_Id = OtherNotification.DeliveryMan_ID;
+                        pushModel.notification.EntityType = EntityType;
+                        pushModel.notification.EntityId = OtherNotification.EntityId;
+                        pushModel.aps.contentavailable = 1;
+                    }
+
+                    using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                    {
+                        var dta = new DynamicValuesModel
                         {
-                            pushModel.aps.alert.title = AdminNotification.Title;
-                            pushModel.aps.alert.body = AdminNotification.Description;
-                            pushModel.notification.NotificationId = device.User.Notifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id).Id;
-                            pushModel.notification.Type = (int)PushNotificationType.Announcement;
+                            entityid = pushModel.notification.EntityId,
+                            entitytype = pushModel.notification.EntityType,
+                            notificationid = pushModel.notification.NotificationId,
+                            isread = true
+                        };
+
+
+
+                        var messageInformation = new NotificationMessage();
+                        //string[] authTokens = new string[1];
+                        //authTokens[0]=new string
+                        string[] authTokens = { device.AuthToken };
+
+                        messageInformation.notification = new SendNotification()
+                        {
+                            title = pushModel.aps.alert.title,
+                            text = pushModel.aps.alert.body
+                        };
+                        messageInformation.registration_ids = authTokens;
+
+                        messageInformation.data = dta;
+                        //Object to JSON STRUCTURE => using Newtonsoft.Json;
+                        string jsonMessage = JsonConvert.SerializeObject(messageInformation);
+                        streamWriter.Write(jsonMessage);
+                        streamWriter.Flush();
+                    }
+
+                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        result = streamReader.ReadToEnd();
+                        if (result.Contains("success") && result.Contains("failure"))
+                        {
+                            dynamic token = JObject.Parse(result);
+                            string success = token.success.ToString();
+                            //return success == "1" ? true : false;
                         }
                         else
                         {
-                            pushModel.aps.alert.title = OtherNotification.Title;
-                            pushModel.aps.alert.body = OtherNotification.Text;
-                            pushModel.notification.NotificationId = OtherNotification.Id;
-                            pushModel.notification.Type = Type;
                         }
-
-                        ApnsServiceBroker apnsBroker;
-
-                        if (device.ApplicationType == UserDevice.ApplicationTypes.Enterprise)
-                        {
-                            if (device.EnvironmentType == UserDevice.ApnsEnvironmentTypes.Production)
-                                apnsBroker = new ApnsServiceBroker(Enterprise.IOS.ProductionConfig);
-                            else // Sandbox/Development
-                                apnsBroker = new ApnsServiceBroker(Enterprise.IOS.SandboxConfig);
-                        }
-                        else //PlayStore
-                        {
-                            if (device.EnvironmentType == UserDevice.ApnsEnvironmentTypes.Production)
-                                apnsBroker = new ApnsServiceBroker(PlayStore.IOS.ProductionConfig);
-                            else // Sandbox/Development
-                                apnsBroker = new ApnsServiceBroker(device.iOSPushConfiguration = PlayStore.IOS.SandboxConfig);
-                        }
-
-                        apnsBroker.OnNotificationFailed += IOSPushNotificationFailed;
-                        apnsBroker.OnNotificationSucceeded += IOSNotificationSuccess;
-
-                        // Start the broker
-                        apnsBroker.Start();
-                        apnsBroker.QueueNotification(new ApnsNotification
-                        {
-                            DeviceToken = device.AuthToken,
-                            Payload = JObject.Parse(Newtonsoft.Json.JsonConvert.SerializeObject(pushModel))
-                        });
-
-                        apnsBroker.Stop();
-                        apnsBroker.OnNotificationFailed -= IOSPushNotificationFailed;
-                        apnsBroker.OnNotificationSucceeded -= IOSNotificationSuccess;
                     }
                 }
+
+                // return result;
             }
             catch (Exception ex)
             {
-                Utility.LogError(ex);
             }
+
         }
+
+
+
+        //public void SendIOSPushNotification(List<UserDevice> devices, AdminNotifications AdminNotification = null, Notification OtherNotification = null, int Type = 0)
+        //{
+        //    try
+        //    {
+        //        // Configuration (NOTE: .pfx can also be used here)
+        //        if (devices.Count() == 0) //it means there is no device no need to run the below code
+        //        {
+        //            return;
+        //        }
+
+        //        if (ApnsConfig != null)
+        //        {
+        //            IosPush pushModel = new IosPush();
+
+        //            foreach (var device in devices.Where(x => x.IsActive))
+        //            {
+        //                if (AdminNotification != null)
+        //                {
+        //                    pushModel.aps.alert.title = AdminNotification.Title;
+        //                    pushModel.aps.alert.body = AdminNotification.Description;
+        //                    pushModel.notification.NotificationId = device.User.Notifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id).Id;
+        //                    pushModel.notification.Type = (int)PushNotificationType.Announcement;
+        //                }
+        //                else
+        //                {
+        //                    pushModel.aps.alert.title = OtherNotification.Title;
+        //                    pushModel.aps.alert.body = OtherNotification.Text;
+        //                    pushModel.notification.NotificationId = OtherNotification.Id;
+        //                    pushModel.notification.Type = Type;
+        //                }
+
+        //                ApnsServiceBroker apnsBroker;
+
+        //                if (device.ApplicationType == UserDevice.ApplicationTypes.Enterprise)
+        //                {
+        //                    if (device.EnvironmentType == UserDevice.ApnsEnvironmentTypes.Production)
+        //                        apnsBroker = new ApnsServiceBroker(Enterprise.IOS.ProductionConfig);
+        //                    else // Sandbox/Development
+        //                        apnsBroker = new ApnsServiceBroker(Enterprise.IOS.SandboxConfig);
+        //                }
+        //                else //PlayStore
+        //                {
+        //                    if (device.EnvironmentType == UserDevice.ApnsEnvironmentTypes.Production)
+        //                        apnsBroker = new ApnsServiceBroker(PlayStore.IOS.ProductionConfig);
+        //                    else // Sandbox/Development
+        //                        apnsBroker = new ApnsServiceBroker(device.iOSPushConfiguration = PlayStore.IOS.SandboxConfig);
+        //                }
+
+        //                apnsBroker.OnNotificationFailed += IOSPushNotificationFailed;
+        //                apnsBroker.OnNotificationSucceeded += IOSNotificationSuccess;
+
+        //                // Start the broker
+        //                apnsBroker.Start();
+        //                apnsBroker.QueueNotification(new ApnsNotification
+        //                {
+        //                    DeviceToken = device.AuthToken,
+        //                    Payload = JObject.Parse(Newtonsoft.Json.JsonConvert.SerializeObject(pushModel))
+        //                });
+
+        //                apnsBroker.Stop();
+        //                apnsBroker.OnNotificationFailed -= IOSPushNotificationFailed;
+        //                apnsBroker.OnNotificationSucceeded -= IOSNotificationSuccess;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Utility.LogError(ex);
+        //    }
+        //}
 
         private void IOSNotificationSuccess(ApnsNotification notification)
         {

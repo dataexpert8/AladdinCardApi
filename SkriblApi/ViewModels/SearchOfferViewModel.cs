@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -24,5 +25,7 @@ namespace BasketApi.ViewModels
         public int Store_Id { get; set; }
 
         public string StoreName { get; set; }
+
+        public Store Store { get; set; }
     }
 }

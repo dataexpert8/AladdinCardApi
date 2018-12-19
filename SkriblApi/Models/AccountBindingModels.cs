@@ -184,6 +184,9 @@ namespace BasketApi.Models
     public class SetPasswordBindingModel
     {
         [Required]
+        public string Email { get; set; }
+
+        [Required]
         public string OldPassword { get; set; }
 
         [Required]
@@ -197,7 +200,7 @@ namespace BasketApi.Models
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        [Required]
+    
         public int SignInType { get; set; }
     }
 
@@ -252,6 +255,16 @@ namespace BasketApi.Models
         [Required]
         [Display(Name = "Code")]
         public string Code { get; set; }
+    }
+
+    public class SavingBindingModel
+    {
+        public int User_Id { get; set; }
+
+        public string Savings { get; set; }
+
+
+
     }
 
     public class VerificationBindingModel

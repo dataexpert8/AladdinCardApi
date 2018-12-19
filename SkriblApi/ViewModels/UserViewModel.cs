@@ -29,7 +29,15 @@ namespace BasketApi.ViewModels
         
         public string InstagramUrl { get; set; }
     }
-    
+    public class SavingsViewModel
+    {
+        public SavingsViewModel()
+        {
+            Savings = new List<DAL.Savings>();
+        }
+        public List<Savings> Savings { get; set; }
+        public int TotalRecords { get; set; }
+    }
     public class UserViewModel
     {
         public int Id { get; set; }

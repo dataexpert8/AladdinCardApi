@@ -56,6 +56,10 @@ namespace DAL
         public virtual DbSet<UserSubscriptions> UserSubscriptions { get; set; }
         public virtual DbSet<AdminNotifications> AdminNotifications { get; set; }
         public virtual DbSet<VerificaionCodes> VerifyCodes { get; set; }
+        public virtual DbSet<Cities> Cities { get; set; }
+        public virtual DbSet<Savings> Savings { get; set; }
+        public virtual DbSet<CardRequest> CardRequest { get; set; }
+
 
 
 
@@ -66,6 +70,12 @@ namespace DAL
                  .WithRequired(x => x.User)
                  .HasForeignKey(x => x.User_Id)
                  .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<User>()
+               .HasMany(x => x.Savings)
+               .WithRequired(x => x.User)
+               .HasForeignKey(x => x.User_Id)
+               .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<AdminNotifications>()
                .HasMany(e => e.Notifications)

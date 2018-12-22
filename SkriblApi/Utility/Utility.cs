@@ -158,7 +158,8 @@ namespace BasketApi
             Package,
             Admin,
             Offer,
-            Box
+            Box,
+            City=8
         }
 
         public static string GetOrderStatusName(int orderStatus)
@@ -243,11 +244,11 @@ namespace BasketApi
                         OtherNotification: Notification,
                         Type: PushType);
 
-                    Global.objPushNotifications.SendIOSPushNotification
-                    (
-                        usersToPushIOS,
-                        OtherNotification: Notification,
-                        Type: PushType);
+                    //Global.objPushNotifications.SendIOSPushNotification
+                    //(
+                    //    usersToPushIOS,
+                    //    OtherNotification: Notification,
+                    //    Type: PushType);
                 });
             }
             catch (Exception ex)

@@ -477,7 +477,7 @@ namespace WebApplication1.Areas.Admin.Controllers
                 model.DiscountPercentage = Convert.ToDouble(httpRequest.Params["DiscountPercentage"]);
                 model.DiscountPrice = Convert.ToDouble(httpRequest.Params["DiscountPrice"]);
                 model.CreatedDate = DateTime.UtcNow;
-                
+
 
                 Validate(model);
 
@@ -617,7 +617,7 @@ namespace WebApplication1.Areas.Admin.Controllers
                             postedFile.SaveAs(newFullPath);
                             model.ImageUrl = ConfigurationManager.AppSettings["ProductImageFolderPath"] + model.Id + "_" + guid + fileExtension;
                         }
-                     
+
                         ctx.Entry(existingProduct).CurrentValues.SetValues(model);
                         ctx.SaveChanges();
                     }
@@ -1087,7 +1087,7 @@ where Categories.IsDeleted = 0";
 
                     var offers = ctx.Database.SqlQuery<SearchOfferViewModel>(query).ToList();
 
-                    if(offers != null)
+                    if (offers != null)
                     {
                         foreach (var offer in offers)
                         {
@@ -1095,7 +1095,7 @@ where Categories.IsDeleted = 0";
                         }
                     }
 
-                    
+
                     return Ok(new CustomResponse<SearchOfferListViewModel> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = new SearchOfferListViewModel { Offers = offers } });
                 }
             }
@@ -1171,6 +1171,9 @@ where Categories.IsDeleted = 0";
                             ctx.Boxes.FirstOrDefault(x => x.Id == Id).IsDeleted = true;
                             ctx.Database.ExecuteSqlCommand("update BoxVideos set isdeleted = 1 where Box_Id = " + Id + @"; 
                             update UserSubscriptions set isdeleted = 1 where Box_Id = " + Id);
+                            break;
+                        case (int)BasketEntityTypes.City:
+                            ctx.Cities.FirstOrDefault(x => x.Id == Id).IsDeleted = true;
                             break;
                         default:
                             break;
@@ -2085,7 +2088,7 @@ and
                         HostingEnvironment.QueueBackgroundWorkItem(cancellationToken =>
                         {
                             Global.objPushNotifications.SendAndroidPushNotification(usersToPushAndroid, adminNotification);
-                            Global.objPushNotifications.SendIOSPushNotification(usersToPushIOS, adminNotification);
+                            //Global.objPushNotifications.SendIOSPushNotification(usersToPushIOS, adminNotification);
 
                         });
 
@@ -2261,6 +2264,8 @@ and
                             return Ok(new CustomResponse<DAL.Offer> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = ctx.Offers.FirstOrDefault(x => x.Id == Id && x.IsDeleted == false) });
                         case (int)BasketEntityTypes.Box:
                             return Ok(new CustomResponse<DAL.Box> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = ctx.Boxes.FirstOrDefault(x => x.Id == Id && x.IsDeleted == false) });
+                        case (int)BasketEntityTypes.City:
+                            return Ok(new CustomResponse<DAL.Cities> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK, Result = ctx.Cities.FirstOrDefault(x => x.Id == Id && x.IsDeleted == false) });
 
                         default:
                             return Ok(new CustomResponse<Error> { Message = Global.ResponseMessages.BadRequest, StatusCode = (int)HttpStatusCode.BadRequest, Result = new Error { ErrorMessage = "Invalid entity type" } });
@@ -2296,5 +2301,53 @@ and
             }
         }
 
+
+        [BasketApi.Authorize("SubAdmin", "SuperAdmin", "ApplicationAdmin")]
+        [Route("AddCity")]
+        public async Task<IHttpActionResult> AddCity(AddCityBindingModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                using (SkriblContext ctx = new SkriblContext())
+                {
+                    Cities city = new Cities();
+
+                    if (model.Id == 0)
+                    {
+                        city = ctx.Cities.Add(new Cities
+                        {
+                            CityName = model.CityName,
+                            Latitude = model.Latitude,
+                            Longitude = model.Longitude,
+                            IsDeleted = false
+                        });
+                        ctx.SaveChanges();
+                    }
+                    else
+                    {
+                        city = ctx.Cities.FirstOrDefault(x => x.Id == model.Id);
+                        city.CityName = model.CityName;
+                        city.Latitude = model.Latitude;
+                        city.Longitude = model.Longitude;
+                        ctx.SaveChanges();
+                    }
+
+                    return Ok(new CustomResponse<string> { Message = Global.ResponseMessages.Success, StatusCode = (int)HttpStatusCode.OK });
+
+
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(Utility.LogError(ex));
+            }
+        }
     }
 }

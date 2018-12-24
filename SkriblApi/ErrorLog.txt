@@ -1336,3 +1336,15 @@ StackTrace   at System.Data.Entity.Core.EntityClient.EntityConnection.Open()
 Inner Exception : Cannot open database "Aladdin" requested by the login. The login failed.
 Login failed for user 'Aladdin'.
 ------******------
+DateTime : 12/24/2018 12:27:24 AM
+
+
+MessageObject reference not set to an instance of an object.
+
+StackTrace   at BasketApi.PushNotifications.SendIOSPushNotification(List`1 devices, AdminNotifications AdminNotification, Notification OtherNotification, Int32 EntityType, Int32 EntityId) in C:\Driver B\Projects\Skribl\AladdinCard\SkriblApi\AladdinCardApi\SkriblApi\Utility\PushNotifications.cs:line 277
+DateTime : 12/24/2018 12:30:08 AM
+
+
+MessageObject reference not set to an instance of an object.
+
+StackTrace   at BasketApi.PushNotifications.SendIOSPushNotification(List`1 devices, AdminNotifications AdminNotification, Notification OtherNotification, Int32 EntityType, Int32 EntityId) in C:\Driver B\Projects\Skribl\AladdinCard\SkriblApi\AladdinCardApi\SkriblApi\Utility\PushNotifications.cs:line 277

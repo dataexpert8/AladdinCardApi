@@ -206,17 +206,19 @@ namespace BasketApi
         }
 
 
-        //public class IosPush
-        //{
-        //    public IosPush()
-        //    {
-        //        aps = new aps();
-        //        notification = new NotificationModel();
-        //    }
 
-        //    public aps aps { get; set; }
-        //    public NotificationModel notification { get; set; }
-        //}
+
+        public class IosPush
+        {
+            public IosPush()
+            {
+                aps = new aps();
+                notification = new NotificationModel();
+            }
+
+            public aps aps { get; set; }
+            public NotificationModel notification { get; set; }
+        }
 
         public class aps
         {
@@ -227,6 +229,20 @@ namespace BasketApi
             public alert alert { get; set; }
             public string sound { get; set; } = "Default";
             public int badge { get; set; } = 1;
+            public int contentavailable { get; set; }
+        }
+
+        public class NotificationModel
+        {
+            public string Title { get; set; }
+
+            public string Message { get; set; }
+
+            public int NotificationId { get; set; }
+
+            public int EntityType { get; set; }
+
+            public int EntityId { get; set; }
         }
 
         public class alert
@@ -235,8 +251,14 @@ namespace BasketApi
             public string body { get; set; }
         }
 
+        public class DynamicValuesModel
+        {
+            public int entityid { get; set; }
+            public int entitytype { get; set; }
+            public int notificationid { get; set; }
+            public bool isread { get; set; }
+        }
 
-        // from here
         public class NotificationMessage
         {
             public string[] registration_ids { get; set; }
@@ -247,13 +269,7 @@ namespace BasketApi
         {
             public string title { get; set; }
             public string text { get; set; }
-        }
-        public class DynamicValuesModel
-        {
-            public int entityid { get; set; }
-            public int entitytype { get; set; }
-            public int notificationid { get; set; }
-            public bool isread { get; set; }
+            public string sound { get; set; }
         }
 
 
@@ -277,36 +293,32 @@ namespace BasketApi
         //            if (AdminNotification != null)
         //            {
 
-        //                pushModel.aps.alert.title = AdminNotification.Title;
-        //                pushModel.aps.alert.body = AdminNotification.Description;
-        //                if (device.User != null)
-        //                    pushModel.notification.NotificationId = device.User.SendingUserNotifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id).Id;
-        //                else
-        //                    //pushModel.notification.NotificationId = device.DeliveryMan.Notifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id).Id;
-        //                    pushModel.notification.EntityType = (int)PushNotificationType.Announcement;
-        //                //pushModel.notification.EntityId = OtherNotification.Entity_ID.Value;
-        //                pushModel.aps.contentavailable = 1;
+        //                pushModel.notification.title = AdminNotification.Title;
+        //                pushModel.notification.text= AdminNotification.Description;
+
+
+        //                //pushModel.data.contentavailable = 1;
         //            }
         //            else
         //            {
-        //                pushModel.aps.alert.title = OtherNotification.Title;
-        //                pushModel.aps.alert.body = OtherNotification.Description;
-        //                pushModel.notification.NotificationId = OtherNotification.Id;
+        //                pushModel.notification.title = OtherNotification.Title;
+        //                pushModel.notification.text = OtherNotification.Text;
+        //                //pushModel.notification.NotificationId = OtherNotification.Id;
         //                //pushModel.notification.DeliveryMan_Id = OtherNotification.DeliveryMan_ID;
-        //                pushModel.notification.EntityType = EntityType;
-        //                pushModel.notification.EntityId = OtherNotification.EntityId;
-        //                pushModel.aps.contentavailable = 1;
+        //               // pushModel.notification.EntityType = EntityType;
+        //               // pushModel.notification.EntityId = OtherNotification.EntityId;
+        //               //pushModel.aps.contentavailable = 1;
         //            }
 
         //            using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
         //            {
-        //                var dta = new DynamicValuesModel
-        //                {
-        //                    entityid = pushModel.notification.EntityId,
-        //                    entitytype = pushModel.notification.EntityType,
-        //                    notificationid = pushModel.notification.NotificationId,
-        //                    isread = true
-        //                };
+        //                //var dta = new DynamicValuesModel
+        //                //{
+        //                //    entityid = pushModel.notification.EntityId,
+        //                //    entitytype = pushModel.notification.EntityType,
+        //                //    notificationid = pushModel.notification.NotificationId,
+        //                //    isread = true
+        //                //};
 
 
 
@@ -315,14 +327,10 @@ namespace BasketApi
         //                //authTokens[0]=new string
         //                string[] authTokens = { device.AuthToken };
 
-        //                messageInformation.notification = new SendNotification()
-        //                {
-        //                    title = pushModel.aps.alert.title,
-        //                    text = pushModel.aps.alert.body
-        //                };
+
         //                messageInformation.registration_ids = authTokens;
 
-        //                messageInformation.data = dta;
+        //               // messageInformation.data = dta;
         //                //Object to JSON STRUCTURE => using Newtonsoft.Json;
         //                string jsonMessage = JsonConvert.SerializeObject(messageInformation);
         //                streamWriter.Write(jsonMessage);
@@ -349,10 +357,117 @@ namespace BasketApi
         //    }
         //    catch (Exception ex)
         //    {
+        //        Utility.LogError(ex);
         //    }
 
         //}
 
+
+
+        public void SendIOSPushNotification(List<UserDevice> devices, AdminNotifications AdminNotification = null, Notification OtherNotification = null, int EntityType = 0, int EntityId = 0)
+        {
+            string serverKey = GCMWebAPIKey;
+            var result = "-1";
+            var notificationid = 0;
+
+            try
+            {
+                var webAddr = "https://fcm.googleapis.com/fcm/send";
+
+                foreach (var device in devices.Where(x => x.IsActive))
+                {
+                    var httpWebRequest = (HttpWebRequest)WebRequest.Create(webAddr);
+                    httpWebRequest.ContentType = "application/json";
+                    httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, "key=" + serverKey);
+                    httpWebRequest.Method = "POST";
+                    IosPush pushModel = new IosPush();
+                    if (AdminNotification != null)
+                    {
+                        pushModel.aps.alert.title = AdminNotification.Title;
+                        pushModel.aps.alert.body = AdminNotification.Description;
+                        //using (RiscoContext ctx=new RiscoContext())
+                        //{
+                        //    ctx.Notifications.Count();
+                        //}
+
+                        //if (device.User != null)
+                        //    pushModel.notification.NotificationId = device.User.SendingUserNotifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id).Id;
+                        //else
+                            //pushModel.notification.NotificationId = device.DeliveryMan.Notifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id).Id;
+                            pushModel.notification.EntityType = (int)PushNotificationType.Announcement;
+                        //pushModel.notification.EntityId = OtherNotification.Entity_ID.Value;
+                        pushModel.aps.contentavailable = 1;
+                    }
+                    else
+                    {
+                        pushModel.aps.alert.title = OtherNotification.Title;
+                        pushModel.aps.alert.body = OtherNotification.Text;
+                        pushModel.notification.NotificationId = OtherNotification.Id;
+                        //pushModel.notification.DeliveryMan_Id = OtherNotification.DeliveryMan_ID;
+                        pushModel.notification.EntityType = EntityType;
+                        pushModel.notification.EntityId = 1;
+                        pushModel.aps.contentavailable = 1;
+                    }
+
+                    using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                    {
+                        var dta = new DynamicValuesModel
+                        {
+                            entityid = pushModel.notification.EntityId,
+                            entitytype = pushModel.notification.EntityType,
+                            notificationid = pushModel.notification.NotificationId,
+                            isread = true
+                        };
+
+
+
+                        var messageInformation = new NotificationMessage();
+                        //string[] authTokens = new string[1];
+                        //authTokens[0]=new string
+                        string[] authTokens = { device.AuthToken };
+
+                        messageInformation.notification = new SendNotification()
+                        {
+                            title = pushModel.aps.alert.title,
+                            text = pushModel.aps.alert.body
+                        };
+                        messageInformation.registration_ids = authTokens;
+
+                        messageInformation.data = dta;
+                        //Object to JSON STRUCTURE => using Newtonsoft.Json;
+                        string jsonMessage = JsonConvert.SerializeObject(messageInformation);
+
+
+                        //string json = "";
+                        //json = "{\"to\": \"" + device.AuthToken + "\",\"notification\": {\"body\": \"" + pushModel.aps.alert.body + "\",\"title\": \"" + pushModel.aps.alert.title + "\",\"notificationid\": \"" + pushModel.notification.NotificationId + "\",\"entitytype\": \"" + pushModel.notification.EntityType + "\",\"entityid\": \"" + pushModel.notification.EntityId + "\",\"isread\": \"" + true + "\",}}";
+                        //json = "{\"to\": \"" + device.AuthToken + "\",\"notification\": {\"text\": \"" + pushModel.aps.alert.body + "\",\"title\": \"" + pushModel.aps.alert.title + "\",\"notificationid\": \"" + notificationid + "\",\"isread\": \"" + true + "\",},\"data\":{\"entitytype\": \"" + pushModel.notification.EntityType + "\",\"entityid\": \"" + pushModel.notification.EntityId + "\",}}";
+                        streamWriter.Write(jsonMessage);
+                        streamWriter.Flush();
+                    }
+
+                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        result = streamReader.ReadToEnd();
+                        if (result.Contains("success") && result.Contains("failure"))
+                        {
+                            dynamic token = JObject.Parse(result);
+                            string success = token.success.ToString();
+                            //return success == "1" ? true : false;
+                        }
+                        else
+                        {
+                        }
+                    }
+                }
+
+                // return result;
+            }
+            catch (Exception ex)
+            {
+            }
+
+        }
 
 
         //public void SendIOSPushNotification(List<UserDevice> devices, AdminNotifications AdminNotification = null, Notification OtherNotification = null, int Type = 0)
@@ -464,7 +579,7 @@ namespace BasketApi
 
                     if (AdminNotification != null)
                     {
-                        msgModel.Type = (int)PushNotificationType.Announcement;
+                       // msgModel.Type = (int)PushNotificationType.Announcement;
                         var notification = device.User.Notifications.FirstOrDefault(x => x.AdminNotification_Id == AdminNotification.Id);
                         msgModel.Message = AdminNotification.Description;
                         msgModel.NotificationId = notification.Id;
@@ -472,7 +587,7 @@ namespace BasketApi
                     }
                     else if (OtherNotification != null)
                     {
-                        msgModel.Type = Type;
+                        //msgModel.Type = Type;
                         msgModel.Message = OtherNotification.Text;
                         msgModel.NotificationId = OtherNotification.Id;
                         msgModel.Title = OtherNotification.Title;

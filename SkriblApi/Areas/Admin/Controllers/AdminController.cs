@@ -2082,13 +2082,13 @@ and
 
                         await ctx.SaveChangesAsync();
 
-                        var usersToPushAndroid = users.Where(x => x.IsNotificationsOn).SelectMany(x => x.UserDevices.Where(x1 => x1.Platform == true)).ToList();
-                        var usersToPushIOS = users.Where(x => x.IsNotificationsOn).SelectMany(x => x.UserDevices.Where(x1 => x1.Platform == false)).ToList();
+                      //  var usersToPushAndroid = users.Where(x => x.IsNotificationsOn).SelectMany(x => x.UserDevices.Where(x1 => x1.Platform == true)).ToList();
+                        var usersToPushIOS = ctx.UserDevices.ToList();
 
                         HostingEnvironment.QueueBackgroundWorkItem(cancellationToken =>
                         {
-                            Global.objPushNotifications.SendAndroidPushNotification(usersToPushAndroid, adminNotification);
-                            //Global.objPushNotifications.SendIOSPushNotification(usersToPushIOS, adminNotification);
+                            //Global.objPushNotifications.SendAndroidPushNotification(usersToPushAndroid, adminNotification);
+                            Global.objPushNotifications.SendIOSPushNotification(usersToPushIOS, adminNotification);
 
                         });
 
